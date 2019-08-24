@@ -36,6 +36,9 @@ public class Todo {
     }
 
     private void setTitle(String title) {
+    	if (Objects.isNull(title) || title.trim().length() < 4) {
+    		throw new TodoCreationException("할 일을 4자 이상 작성하세요.");
+    	}
         this.title = title;
     }
 
