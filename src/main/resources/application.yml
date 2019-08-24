@@ -1,5 +1,10 @@
 site:
   author: Daehee
+  
+spring:
+  http:
+    encoding:
+      force: true
 
 logging.level:
   todoapp: DEBUG

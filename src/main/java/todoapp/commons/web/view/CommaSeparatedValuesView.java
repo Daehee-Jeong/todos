@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class CommaSeparatedValuesView extends AbstractView implements SpreadsheetSupport {
 
-    private static final String CONTENT_TYPE = "text/csv";
+    private static final String CONTENT_TYPE = "text/csv;charset=utf8";
     private static final String FILE_EXTENSION = "csv";
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
