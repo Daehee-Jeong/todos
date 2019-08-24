@@ -1,6 +1,0 @@
-site:
-  author: Daehee
-
-logging.level:
-  org.springframework.boot: INFO
-  org.springframework.web: DEBUG

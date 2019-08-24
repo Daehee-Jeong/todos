@@ -32,8 +32,7 @@ public class TodoController {
 	}
 	
 	@RequestMapping("/todos")
-	public String todos(Model model) {
+	public void todos(Model model) {
 		model.addAttribute("site", site);
-		return "todos";
 	}
 }

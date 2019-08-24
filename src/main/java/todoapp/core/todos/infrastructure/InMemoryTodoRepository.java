@@ -2,6 +2,10 @@ package todoapp.core.todos.infrastructure;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import todoapp.Constant;
@@ -22,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Profile(Constant.PROFILE_DEVELOPMENT)
 @Repository
-public class InMemoryTodoRepository implements TodoRepository {
+public class InMemoryTodoRepository implements TodoRepository, InitializingBean, CommandLineRunner, ApplicationRunner {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final List<Todo> todos = new CopyOnWriteArrayList<>();
@@ -56,5 +60,23 @@ public class InMemoryTodoRepository implements TodoRepository {
     public void delete(Todo todo) {
         todos.remove(todo);
     }
+    
+    // InitializingBean
+    @Override
+    public void afterPropertiesSet() {
+    	save(Todo.create("Task One!"));
+    }
+
+    // CommandLineRunner
+	@Override
+	public void run(String... args) throws Exception {
+		save(Todo.create("Task Two!"));
+	}
+
+	// ApplicationRunner
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		log.info("애플리케이션 러너가 수행되었습니다."); // 개발자가 작성한 로그에 대해서도 출력할 수 있도록 설정 필
+	}
 
 }

@@ -2,5 +2,6 @@ site:
   author: Daehee
 
 logging.level:
+  todoapp: DEBUG
   org.springframework.boot: INFO
   org.springframework.web: DEBUG
