@@ -47,7 +47,7 @@ public class TodoRestController {
 	}
 	
 	@PutMapping("/{id}")
-	public void update(@PathVariable Long id, @RequestBody TodoWriteCommand command) {
+	public void update(@PathVariable Long id, @RequestBody @Valid TodoWriteCommand command) {
 		log.debug("command.title: {}, command.completed: {}", command.getTitle(), command.isCompleted());
 		editor.update(id, command.getTitle(), command.isCompleted());
 	}
