@@ -2,6 +2,7 @@ package todoapp.security.web.servlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -29,17 +30,23 @@ public class RolesVerifyHandlerInterceptor implements HandlerInterceptor, RolesA
 
     public RolesVerifyHandlerInterceptor(UserSessionRepository sessionRepository) {
 		this.sessionRepository = sessionRepository;
-	}
-
-
+    }
 
 	@Override
     public final boolean preHandle(
     		HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     	
     	if (handler instanceof HandlerMethod) { // 직접 작성한 핸들러라면
+    
+    		HandlerMethod handlerMethod = ((HandlerMethod) handler);
     		RolesAllowed rolesAllowed = ((HandlerMethod) handler)
     				.getMethodAnnotation(RolesAllowed.class);
+    		
+    		if (Objects.isNull(rolesAllowed)) {
+    			// 컨트롤러 안의 핸들러(메서드)에 붙어있는 애노테이션을 찾는 로직에서 Controller에 붙어있는 애노테이션도 찾을 수 있도록 수정
+    			AnnotatedElementUtils.findMergedAnnotation(handlerMethod.getBeanType(), RolesAllowed.class);
+    		}
+    		
     		if (Objects.nonNull(rolesAllowed)) {
     			// 1. 사용자가 로그인되어 있습니까?
     			UserSession session = sessionRepository.get();
