@@ -44,7 +44,7 @@ public class RolesVerifyHandlerInterceptor implements HandlerInterceptor, RolesA
     		
     		if (Objects.isNull(rolesAllowed)) {
     			// 컨트롤러 안의 핸들러(메서드)에 붙어있는 애노테이션을 찾는 로직에서 Controller에 붙어있는 애노테이션도 찾을 수 있도록 수정
-    			AnnotatedElementUtils.findMergedAnnotation(handlerMethod.getBeanType(), RolesAllowed.class);
+    			rolesAllowed = AnnotatedElementUtils.findMergedAnnotation(handlerMethod.getBeanType(), RolesAllowed.class);
     		}
     		
     		if (Objects.nonNull(rolesAllowed)) {
