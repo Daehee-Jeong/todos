@@ -15,7 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 스프링부트에 기본 구현체인 {@link DefaultErrorAttributes}에 message 속성을 덮어쓰기 할 목적으로 작성한 컴포넌트이다.
@@ -67,6 +70,18 @@ public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptio
         	String errorMessage = messageSource.getMessage(
         			errorCode, new Object[0], defaultMessage, webRequest.getLocale());
         	originAttributes.put("message", errorMessage);
+    	}
+    	
+    	// TODO ThrowableUtils.extractBindingResult(error) 로 리팩토링 해보기
+    	if (error instanceof MethodArgumentNotValidException) {
+    		List<String> errors = 
+	    		((MethodArgumentNotValidException)error)
+	    			.getBindingResult()
+    				.getAllErrors()
+		    		.stream()
+		    		.map(ob -> messageSource.getMessage(ob, webRequest.getLocale()))
+		    		.collect(Collectors.toList());
+    		originAttributes.put("errors", errors);
     	}
     	
         return originAttributes;
