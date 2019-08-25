@@ -37,14 +37,14 @@ public class LoginController {
 	}
 	
 	@PostMapping("/login")
-	public String loginProcess(@Valid LoginCommand command, BindingResult bindingResult, Model model) {
+	public String loginProcess(@Valid LoginCommand command, Model model) {
 		log.info("username: {}, password: {}", command.getUsername(), command.getPassword());
 		
-		if (bindingResult.hasErrors()) {
+		/*if (bindingResult.hasErrors()) {
 			model.addAttribute("bindingResult", bindingResult);
 			model.addAttribute("message", "사용자 입력 값이 올바르지 않습니다.");
 			return "login";
-		}
+		}*/
 		
 		// 사용자가 입력한 아이디와 비밀번호로 사용자를 검증
 		// verifier.verify(command.getUsername(), command.getPassword());
