@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import todoapp.commons.web.view.CommaSeparatedValuesView;
 import todoapp.security.UserSessionRepository;
 import todoapp.security.web.method.UserSessionArgumentResolver;
 import todoapp.security.web.servlet.RolesVerifyHandlerInterceptor;
+import todoapp.security.web.servlet.UserSessionFilter;
 
 /**
  * Spring Web MVC 설정
@@ -46,6 +48,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     @Bean
     public ErrorAttributes errorAttributes(MessageSource messageSource) { // 이렇게 작성할 경우 기존의 전략을 버리고 사용자의 새로운 전략을 취하는 것으로 받아들인다.
     	return new ReadableErrorAttributes(messageSource);
+    }
+    
+    @Bean
+    public FilterRegistrationBean<UserSessionFilter> userSessionFilter() {
+    	FilterRegistrationBean<UserSessionFilter> registrationBean = new FilterRegistrationBean<UserSessionFilter>();
+    	registrationBean.setFilter(new UserSessionFilter(sessionRepository));
+    	
+    	return registrationBean;
     }
     
     @Override

@@ -53,15 +53,21 @@ public class RolesVerifyHandlerInterceptor implements HandlerInterceptor, RolesA
     		
     		if (Objects.nonNull(rolesAllowed)) {
     			// 1. 사용자가 로그인되어 있습니까?
-    			UserSession session = sessionRepository.get();
+    			/*UserSession session = sessionRepository.get();
     			if (Objects.isNull(session)) {
+    				throw new UnauthorizedAccessException();
+    			}*/
+    			if (Objects.isNull(request.getUserPrincipal())) {
     				throw new UnauthorizedAccessException();
     			}
     			
     			// 2. 사용자가 핸들러를 실행할 권한을 가지고 있습니까?
-    			Set<String> matchedRoles = Stream.of(rolesAllowed.value())
+    			/*Set<String> matchedRoles = Stream.of(rolesAllowed.value())
 					.filter(session::hasRole)
-					.collect(Collectors.toSet());
+					.collect(Collectors.toSet());*/
+    			Set<String> matchedRoles = Stream.of(rolesAllowed.value())
+    					.filter(request::isUserInRole)
+    					.collect(Collectors.toSet());
     			log.info("matched roles: {}", matchedRoles);
     			
     			if (matchedRoles.size() > 0) {
