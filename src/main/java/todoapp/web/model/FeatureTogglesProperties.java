@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @author springrunner.kr@gmail.com
  */
 @Component
-@ConfigurationProperties("feature-toggles")
+@ConfigurationProperties("site.features")
 public class FeatureTogglesProperties {
 
     private boolean auth = false;

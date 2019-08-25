@@ -1,5 +1,8 @@
 site:
   author: Daehee
+  features:
+    auth: true
+    onlineUsersCounter: false
   
 spring:
   http:

@@ -24,10 +24,7 @@ public class FeatureTogglesRestController {
 	}
 
 	@GetMapping("/api/feature-toggles")
-	public FeatureTogglesProperties featureToggles(FeatureTogglesProperties properties) {
-		this.properties.setAuth(properties.isAuth());
-		this.properties.setOnlineUsersCounter(properties.isOnlineUsersCounter());
-		log.info("auth: {}, onlineUsersCounter: {}", this.properties.isAuth(), this.properties.isOnlineUsersCounter());
+	public FeatureTogglesProperties featureToggles() {
 		return this.properties;
 	}
 	
