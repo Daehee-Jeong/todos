@@ -22,6 +22,7 @@ import todoapp.core.todos.application.TodoFinder;
 import todoapp.core.todos.domain.Todo;
 import todoapp.security.UserSession;
 
+//@RolesAllowed("ROLE_ADMIN")
 @RolesAllowed(UserSession.ROLE_USER)
 @RestController
 @RequestMapping("/api/todos")

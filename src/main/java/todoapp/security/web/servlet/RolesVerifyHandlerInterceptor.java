@@ -6,12 +6,16 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import todoapp.security.AccessDeniedException;
 import todoapp.security.UnauthorizedAccessException;
 import todoapp.security.UserSession;
 import todoapp.security.UserSessionRepository;
 import todoapp.security.support.RolesAllowedSupport;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +57,19 @@ public class RolesVerifyHandlerInterceptor implements HandlerInterceptor, RolesA
     			if (Objects.isNull(session)) {
     				throw new UnauthorizedAccessException();
     			}
+    			
     			// 2. 사용자가 핸들러를 실행할 권한을 가지고 있습니까?
+    			Set<String> matchedRoles = Stream.of(rolesAllowed.value())
+					.filter(session::hasRole)
+					.collect(Collectors.toSet());
+    			log.info("matched roles: {}", matchedRoles);
+    			
+    			if (matchedRoles.size() > 0) {
+    				// 핸들러 실행 승인
+    				return true;
+    			}
+    			// 승인 되지 않음
+    			throw new AccessDeniedException();
     		}
     	}
     	
