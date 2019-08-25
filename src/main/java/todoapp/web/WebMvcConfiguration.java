@@ -10,14 +10,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import todoapp.commons.web.error.ReadableErrorAttributes;
+import todoapp.commons.web.servlet.ExecutionTimeHandlerInterceptor;
+import todoapp.commons.web.servlet.LoggingHandlerInterceptor;
 import todoapp.commons.web.view.CommaSeparatedValuesView;
 import todoapp.security.UserSessionRepository;
 import todoapp.security.web.method.UserSessionArgumentResolver;
+import todoapp.security.web.servlet.RolesVerifyHandlerInterceptor;
 
 /**
  * Spring Web MVC 설정
@@ -44,13 +48,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     	return new ReadableErrorAttributes(messageSource);
     }
     
-    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+    	registry.addInterceptor(new ExecutionTimeHandlerInterceptor());
+    	registry.addInterceptor(new LoggingHandlerInterceptor());
+    	registry.addInterceptor(new RolesVerifyHandlerInterceptor(sessionRepository));
+    }
 
     @Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(new UserSessionArgumentResolver(sessionRepository));
 	}
-
 
 
 	/**
