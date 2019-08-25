@@ -8,6 +8,7 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,6 +16,8 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import todoapp.commons.web.error.ReadableErrorAttributes;
 import todoapp.commons.web.view.CommaSeparatedValuesView;
+import todoapp.security.UserSessionRepository;
+import todoapp.security.web.method.UserSessionArgumentResolver;
 
 /**
  * Spring Web MVC 설정
@@ -23,7 +26,12 @@ import todoapp.commons.web.view.CommaSeparatedValuesView;
  */
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
-
+	
+	private UserSessionRepository sessionRepository;
+	
+	public WebMvcConfiguration (UserSessionRepository sessionRepository) {
+		this.sessionRepository = sessionRepository;
+	}
 	
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
@@ -35,8 +43,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public ErrorAttributes errorAttributes(MessageSource messageSource) { // 이렇게 작성할 경우 기존의 전략을 버리고 사용자의 새로운 전략을 취하는 것으로 받아들인다.
     	return new ReadableErrorAttributes(messageSource);
     }
+    
+    
 
-    /**
+    @Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+		resolvers.add(new UserSessionArgumentResolver(sessionRepository));
+	}
+
+
+
+	/**
      * 스프링부트가 생성한 ContentNegotiatingViewResolver를 조작할 목적으로 작성
      */
     @Configuration
