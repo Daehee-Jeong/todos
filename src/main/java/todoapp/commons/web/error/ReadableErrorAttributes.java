@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,26 +27,43 @@ import java.util.Map;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ReadableErrorAttributes implements ErrorAttributes, HandlerExceptionResolver, Ordered {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    private final DefaultErrorAttributes delegate;
-
-    public ReadableErrorAttributes() {
-        this(false);
-    }
-
-    public ReadableErrorAttributes(boolean includeException) {
-        this.delegate = new DefaultErrorAttributes(includeException);
+    private final Logger log = LoggerFactory.getLogger(ReadableErrorAttributes.class);
+    
+    private DefaultErrorAttributes delegate = new DefaultErrorAttributes();
+    private MessageSource messageSource;
+    
+    public ReadableErrorAttributes(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
     @Override
     public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-        Map<String, Object> attributes = delegate.getErrorAttributes(webRequest, includeStackTrace);
-        Throwable error = getError(webRequest);
+    	log.info("나는 일하고 있습니다.");
+    	
+//    	Map<String, Object> attributes = delegate.getErrorAttributes(webRequest, includeStackTrace);
+//        Throwable error = getError(webRequest);
 
         // TODO attributes, error 을 사용해서 message 속성을 읽기 좋은 문구로 가공한다.
         // TODO ex) attributes.put("message", "문구");
-
-        return attributes;
+    	
+    	Map<String, Object> originAttributes = delegate.getErrorAttributes(webRequest, includeStackTrace);
+    	String defaultMessage = (String) originAttributes.get("message");
+    	
+    	Throwable error = getError(webRequest);
+        
+//    	Throwable error = getError(webRequest);
+//    	if (error instanceof MethodArgumentNotValidException) {
+//    		originAttributes.put("message", "사용자 입력 값이 올바르지 않습니다.");
+//    	}
+    	
+    	// errorCode = Exception.MethodArgumentNotValidException
+    	String errorCode = String.format("Exception.%s", error.getClass().getSimpleName());
+    	String errorMessage = messageSource.getMessage(
+    			errorCode, new Object[0], defaultMessage, webRequest.getLocale());
+    	originAttributes.put("message", errorMessage);
+    	
+    	
+        return originAttributes;
     }
 
     @Override
