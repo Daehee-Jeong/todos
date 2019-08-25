@@ -18,6 +18,8 @@ import todoapp.core.user.application.UserPasswordVerifier;
 import todoapp.core.user.domain.User;
 import todoapp.core.user.domain.UserEntityNotFoundException;
 import todoapp.core.user.domain.UserPasswordNotMatchedException;
+import todoapp.security.UserSession;
+import todoapp.security.UserSessionRepository;
 
 @Controller
 public class LoginController {
@@ -27,9 +29,12 @@ public class LoginController {
 	private UserPasswordVerifier verifier;
 	private UserJoinder joinder;
 	
-	public LoginController(UserPasswordVerifier verifier, UserJoinder joinder) {
+	private UserSessionRepository sessionRepository;
+	
+	public LoginController(UserPasswordVerifier verifier, UserJoinder joinder, UserSessionRepository sessionRepository) {
 		this.verifier = verifier;
 		this.joinder = joinder;
+		this.sessionRepository = sessionRepository;
 	}
 
 	@GetMapping("/login")
@@ -68,6 +73,13 @@ public class LoginController {
 			user = joinder.join(command.getUsername(), command.getPassword());
 		}
 		log.info("current user: {}", user);
+		
+		// httpSession.setAttribute ~ 의 문제점, 로드밸런서가 앞에 있다면 어쩔때는 되고 안되고의 문제 발생
+		// 이러한상황 해결을 위해서는 세션클러스터라는 기술이 필요 (유지시키려고한다면)
+		// 수평확장성이 있다면 특정한기술에 의존하면 안됨
+		// 보통 인메모리 디비(레디스 등)를 두고 사용 또는 유사하게 구현
+		
+		sessionRepository.set(new UserSession(user));
 		
 		return "redirect:/todos"; // 내부적으로 RedirectView로 바꿔버린다
 	}
